@@ -27,10 +27,15 @@ struct Deck {
 	int top;
 };
 
+struct Player {
+	Card hole[2];
+	int chips;
+};
 
 //F(x)
 
-void init_deck(Deck* deck) {
+void init_deck(Deck* deck) 
+{
 	deck->top=0;
 	int index=0;
 	for (int s = 0; s < 4; s++ ) {
@@ -42,7 +47,8 @@ void init_deck(Deck* deck) {
 	}
 }
 
-void shuffle(Deck* deck) {
+void shuffle(Deck* deck)
+{
 	for(int i = 0; i < DECK_SIZE; i++) {
 		int j = rand() % DECK_SIZE;
 		Card tmp = deck->cards[i];
@@ -52,20 +58,40 @@ void shuffle(Deck* deck) {
 	deck->top=0;
 }
 
-Card deal_card(Deck* deck) {
+Card deal_card(Deck* deck) 
+{
 	Card c = deck->cards[deck->top];
 	deck->top++;
 	return c;
 }
 
-int main() {
+void deal_hole_cards(Player* players, int num_players, Deck* deck)
+{
+	for ( int i = 0; i < num_players; i++) {
+		players[i].hole[0] = deal_card(deck);
+		players[i].hole[1] = deal_card(deck);
+	}
+}
+
+
+
+int main()
+{
 	srand(time(NULL));
 	Deck deck; 
 	init_deck(&deck);
 	shuffle(&deck);
-	for(int i =0; i < 5; i++) {
-		Card c = deal_card(&deck);
-		printf("Card %d: rank=%d suit=%d\n", i, c.rank, c.suit);
+	Player players[3];
+	for (int i =0; i < 3; i++)
+		players[i].chips=500;
+	
+	deal_hole_cards(players, 3, &deck);
+
+	for(int i=0; i < 3; i++) {
+	printf("Player %d cards:\n", i+1);
+		for(int x = 0 ; x < 2; x++)
+		printf("    rank %d, suit %d\n",players[i].hole[x].rank, players[i].hole[x].suit);
 	}
 
+		
 }
