@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+constexpr int DECK_SIZE = 52;
+
 typedef enum {
 	CLUBS,
 	DIAMONDS,
@@ -20,34 +22,50 @@ typedef struct {
 } Card;
 
 
-#define DECK_SIZE 52
+struct Deck {
+	Card cards[DECK_SIZE];
+	int top;
+};
 
-void init_deck(Card deck[DECK_SIZE]) {
-	int index = 0;
+
+//F(x)
+
+void init_deck(Deck* deck) {
+	deck->top=0;
+	int index=0;
 	for (int s = 0; s < 4; s++ ) {
-		for (int r = 2; r<= 14; r++) {
-		deck[index].rank = (Rank)r;
-		deck[index].suit = (Suit)s;
+		for(int r = 2; r<= 14; r++) {
+		deck->cards[index].rank = static_cast<Rank>(r);
+		deck->cards[index].suit = static_cast<Suit>(s);
 		index++;
 		}
 	}
 }
 
-void shuffle_deck(Card deck[DECK_SIZE]) {
+void shuffle(Deck* deck) {
 	for(int i = 0; i < DECK_SIZE; i++) {
-	int j = rand() % DECK_SIZE;
-	Card tmp = deck[i];
-	deck[i] = deck[j]; 
-	deck[j] = tmp;
+		int j = rand() % DECK_SIZE;
+		Card tmp = deck->cards[i];
+		deck->cards[i] = deck->cards[j]; 
+		deck->cards[j] = tmp;
 	}
+	deck->top=0;
+}
+
+Card deal_card(Deck* deck) {
+	Card c = deck->cards[deck->top];
+	deck->top++;
+	return c;
 }
 
 int main() {
 	srand(time(NULL));
-	Card deck[DECK_SIZE];
-	init_deck(deck);
-	shuffle_deck(deck);
-	for( int i = 0; i < 5; i++){
-		printf("Card %d: rank=%d suit=%d\n", i, deck[i].rank, deck[i].suit);
+	Deck deck; 
+	init_deck(&deck);
+	shuffle(&deck);
+	for(int i =0; i < 5; i++) {
+		Card c = deal_card(&deck);
+		printf("Card %d: rank=%d suit=%d\n", i, c.rank, c.suit);
 	}
+
 }
